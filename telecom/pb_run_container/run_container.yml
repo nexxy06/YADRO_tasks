@@ -1,0 +1,50 @@
+---
+- name: Run container
+  hosts: localhost
+  connection: local 
+  become: true
+
+  vars:
+    img: "http_checker"
+    docker_tag: "latest"
+    path_to_dockerfile: "."
+    container_name: "http_checker"
+  # знаю о существовании Community.Docker, но пока что не знаю его, поэтому всё обычными командами.
+  tasks:
+    - name: Check image exist
+      command: "docker images -q {{ img }}:{{ docker_tag }}"
+      register: image_status
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Build image
+      when: image_status.stdout == ""
+      command: "docker build -t {{ img }}:{{ docker_tag }} {{ path_to_dockerfile }}"
+
+    - name: Stop and remove existing container (if exists)
+      command: "docker rm -f {{ container_name }}"
+      ignore_errors: yes
+    
+    - name: Run container
+      command: docker run --name {{ container_name }} {{ img }}:{{ docker_tag }}
+
+    - name: Wait for container
+      pause:
+        seconds: 5
+
+    - name: Check container exit status
+      command: "docker wait {{ container_name }}"
+      register: container_exit_code
+      failed_when: "container_exit_code.stdout != 0"
+      changed_when: false
+
+    - name: Check logs for an errors
+      command: "docker logs {{ container_name }}"
+      register: container_logs
+      failed_when: "'error' in container_logs.stdout | lower"
+      changed_when: false
+
+    - name: Display logs
+      debug:
+        var: container_logs.stdout
+  # ansible-playbook run_container.yml

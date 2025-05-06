@@ -18,4 +18,4 @@ RUN pip3 install --upgrade pip && \
 CMD [ "python3", "checkHTTP.py" ]
 
 # docker build -t http-checker .
-# docker run http-checker
+# docker run --name http-checker http-checker
