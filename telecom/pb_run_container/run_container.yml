@@ -37,7 +37,7 @@
     - name: Check logs for an errors
       command: "docker logs {{ container_name }}"
       register: container_logs
-      failed_when: "'Program completed.' not in container_logs.stdout | lower"
+      failed_when: "'program completed.' not in container_logs.stdout | lower"
       changed_when: false
 
     - name: Display logs
