@@ -10,7 +10,7 @@ def check_request(url):
             print(f"Status-Code: {response.status_code}")
             print(f"Body: {response.text}\n")
         elif response.status_code // 100 in (4, 5):
-            raise Exception(f"Error response {response.status_code} from {url}: {response.text}\n")
+            raise Exception(f"Response {response.status_code} from {url}: {response.text}\n")
         return response
 
     except Exception as e:
