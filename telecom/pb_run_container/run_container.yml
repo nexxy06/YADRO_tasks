@@ -35,11 +35,11 @@
     - name: Check container exit status
       command: "docker wait {{ container_name }}"
       register: container_exit_code
-      failed_when: "container_exit_code.stdout != 0"
+      failed_when: "container_exit_code.stdout != '0'"
       changed_when: false
 
     - name: Check logs for an errors
-      command: "docker logs {{ container_name }}"
+      command: "sudo docker logs {{ container_name }}"
       register: container_logs
       failed_when: "'error' in container_logs.stdout | lower"
       changed_when: false
